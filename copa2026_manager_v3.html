@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copa 2026 — POD Prompt Manager</title>
+<style>
+:root{--bg:#0a0a0a;--s:#141414;--s2:#1e1e1e;--bd:#2a2a2a;--bd2:#3a3a3a;--t:#f0f0f0;--t2:#888;--t3:#555;--ac:#f0c040;--ac2:#d4a820;--gr:#22c55e;--re:#ef4444;--bl:#3b82f6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;}
+header{background:var(--s);border-bottom:1px solid var(--bd);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:8px;}
+.li{width:28px;height:28px;background:var(--ac);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.lt{font-size:13px;font-weight:600;}
+.ls{font-size:9px;color:var(--t2);}
+.hst{display:flex;gap:12px;}
+.hn{font-size:14px;font-weight:700;color:var(--ac);text-align:right;}
+.hl{font-size:9px;color:var(--t3);text-transform:uppercase;}
+.hbtns{display:flex;align-items:center;gap:5px;}
+.hbtn{background:var(--s2);border:1px solid var(--bd);color:var(--t2);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;}
+.hbtn:hover,.hbtn.on{background:var(--ac);color:#000;border-color:var(--ac);}
+.homebtn{font-size:13px;padding:4px 8px;}
+.layout{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 50px);}
+.sb{background:var(--s);border-right:1px solid var(--bd);overflow-y:auto;}
+.sbsrch{padding:10px 10px 6px;}
+.sbsrch input{width:100%;background:var(--s2);border:1px solid var(--bd);color:var(--t);padding:6px 8px;border-radius:6px;font-size:11px;outline:none;}
+.sbsrch input:focus{border-color:var(--ac);}
+.sblbl{padding:5px 10px 2px;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;}
+.si{display:flex;align-items:center;gap:7px;padding:6px 10px;cursor:pointer;border-left:3px solid transparent;}
+.si:hover{background:var(--s2);}
+.si.on{background:rgba(240,192,64,.07);border-left-color:var(--ac);}
+.sif{font-size:15px;width:20px;text-align:center;}
+.sin{font-size:11px;font-weight:500;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sia{font-size:10px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sic{font-size:10px;color:var(--t3);flex-shrink:0;}
+.cb{font-size:8px;background:var(--ac);color:#000;padding:1px 3px;border-radius:2px;font-weight:700;margin-left:2px;}
+.main{overflow-y:auto;padding:16px;}
+.dhdr{margin-bottom:12px;}
+.stitle{font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.smeta{display:flex;gap:7px;margin-top:5px;flex-wrap:wrap;}
+.mt{font-size:10px;background:var(--s2);border:1px solid var(--bd);color:var(--t2);padding:2px 8px;border-radius:12px;}
+.mt.g{background:rgba(240,192,64,.1);border-color:var(--ac2);color:var(--ac);}
+.mt.v{background:rgba(34,197,94,.08);border-color:#166534;color:var(--gr);}
+.sf{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 8px;}
+.fb{background:var(--s2);border:1px solid var(--bd);color:var(--t2);padding:4px 10px;border-radius:12px;cursor:pointer;font-size:10px;font-weight:500;}
+.fb:hover{color:var(--t);}
+.fb.on{background:rgba(240,192,64,.1);border-color:var(--ac);color:var(--ac);}
+.addbtn{background:rgba(34,197,94,.08);border:1px solid #166534;color:var(--gr);padding:4px 12px;border-radius:12px;cursor:pointer;font-size:10px;font-weight:600;margin-bottom:10px;}
+.addf{background:var(--s);border:1px solid var(--ac2);border-radius:8px;padding:12px;margin-bottom:12px;display:none;}
+.addf.open{display:block;}
+.addf h4{font-size:11px;font-weight:600;color:var(--ac);margin-bottom:8px;}
+.addf input,.addf textarea{width:100%;background:var(--s2);border:1px solid var(--bd);color:var(--t);padding:6px 8px;border-radius:5px;font-size:11px;outline:none;margin-bottom:6px;font-family:inherit;}
+.addf textarea{resize:vertical;min-height:60px;}
+.addf input:focus,.addf textarea:focus{border-color:var(--ac);}
+.adfb{display:flex;gap:6px;}
+.bsv{background:var(--ac);color:#000;padding:5px 14px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:none;}
+.bcn{background:var(--s2);color:var(--t2);padding:5px 10px;border-radius:5px;font-size:11px;cursor:pointer;border:1px solid var(--bd);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;}
+.pc{background:var(--s);border:1px solid var(--bd);border-radius:8px;overflow:hidden;}
+.pc:hover{border-color:var(--bd2);}
+.pc.used{border-color:#166534;opacity:.6;}
+.pch{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);}
+.pcn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.pcb{display:flex;align-items:center;gap:5px;}
+.ubadge{font-size:8px;background:rgba(34,197,94,.12);border:1px solid #166534;color:var(--gr);padding:1px 5px;border-radius:8px;}
+.pcnum{font-size:9px;color:var(--t3);}
+.pcbody{padding:8px 12px;}
+.ptxt{font-size:11px;color:var(--t2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.pedit{width:100%;background:var(--s2);border:1px solid var(--ac);color:var(--t);padding:6px;border-radius:5px;font-size:11px;line-height:1.5;resize:vertical;min-height:70px;outline:none;font-family:inherit;display:none;}
+.pcf{padding:7px 12px;display:flex;gap:5px;border-top:1px solid var(--bd);flex-wrap:wrap;}
+.btn{padding:4px 9px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:none;}
+.bcp{background:var(--s2);color:var(--t2);border:1px solid var(--bd);flex:1;}
+.bcp:hover{background:var(--bd);color:var(--t);}
+.bcp.ok{background:rgba(34,197,94,.1);border-color:var(--gr);color:var(--gr);}
+.bed{background:var(--s2);color:var(--bl);border:1px solid var(--bd);}
+.bsave{background:rgba(59,130,246,.12);color:var(--bl);border:1px solid var(--bl);display:none;}
+.bex{background:var(--ac);color:#000;font-weight:700;}
+.bex:hover{background:var(--ac2);}
+.busedtgl{font-size:9px;padding:4px 7px;background:var(--s2);color:var(--t3);border:1px solid var(--bd);}
+.busedtgl.on{background:rgba(34,197,94,.1);color:var(--gr);border-color:#166534;}
+.sm{display:none;padding:20px;max-width:820px;margin:0 auto;}
+.sm.vis{display:block;}
+.dm.hid{display:none;}
+.sprog{margin-bottom:16px;}
+.sproginfo{display:flex;justify-content:space-between;margin-bottom:5px;}
+.sbar{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;}
+.sfill{height:100%;background:var(--ac);border-radius:2px;transition:width .3s;}
+.scard{background:var(--s);border:1px solid var(--ac2);border-radius:10px;overflow:hidden;}
+.schdr{padding:12px 16px;background:rgba(240,192,64,.04);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.scfl{display:flex;align-items:center;gap:8px;}
+.scflag{font-size:22px;}
+.scnm{font-size:16px;font-weight:700;}
+.scap{font-size:11px;color:var(--t2);}
+.scsb{font-size:9px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:var(--s2);border:1px solid var(--bd);}
+.scbody{padding:16px;}
+.splbl{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.bigp{background:var(--s2);border:1px solid var(--bd2);border-radius:7px;padding:14px;font-size:12px;color:#d4d4d4;line-height:1.8;font-family:'Courier New',monospace;white-space:pre-wrap;word-break:break-word;min-height:140px;max-height:340px;overflow-y:auto;cursor:text;user-select:all;}
+.bigp:focus{outline:2px solid var(--ac);}
+.scact{padding:12px 16px;border-top:1px solid var(--bd);display:flex;gap:8px;align-items:center;}
+.bprev{background:var(--s2);color:var(--t2);border:1px solid var(--bd);padding:7px 12px;border-radius:7px;font-size:11px;cursor:pointer;}
+.bcpbig{background:var(--s2);color:var(--t);border:1px solid var(--bd2);padding:7px 14px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;flex:1;}
+.bcpbig.ok{background:rgba(34,197,94,.1);border-color:var(--gr);color:var(--gr);}
+.bmu{padding:7px 10px;border-radius:7px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s2);color:var(--t3);}
+.bmu.on{background:rgba(34,197,94,.1);border-color:#166534;color:var(--gr);}
+.bnxt{background:var(--ac);color:#000;border:none;padding:7px 18px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;}
+.bnxt:hover{background:var(--ac2);}
+.bnxt:disabled,.bprev:disabled{opacity:.3;cursor:not-allowed;}
+.empty{text-align:center;padding:40px;color:var(--t3);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
+@media(max-width:700px){.layout{grid-template-columns:1fr;}.sb{max-height:260px;}.hst{display:none;}}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<header>
+  <div class="logo">
+    <div class="li">⚽</div>
+    <div><div class="lt">POD Prompt Manager</div><div class="ls">Copa do Mundo 2026</div></div>
+  </div>
+  <div class="hst">
+    <div><div class="hn" id="tp">—</div><div class="hl">Prompts</div></div>
+    <div><div class="hn">32</div><div class="hl">Seleções</div></div>
+    <div><div class="hn" id="uc">0</div><div class="hl">Usados</div></div>
+  </div>
+  <div class="hbtns">
+    <button class="hbtn homebtn" onclick="goHome()" title="Topo">🏠</button>
+    <button class="hbtn on" onclick="setMode('d')" id="bd">Dashboard</button>
+    <button class="hbtn" onclick="setMode('s')" id="bs">Sequencial</button>
+  </div>
+</header>
+<div class="layout">
+<div class="sb">
+  <div class="sbsrch"><input type="text" placeholder="Buscar seleção..." id="srch" oninput="fSel()"></div>
+  <div class="sblbl">Campeãs do Mundo</div>
+  <div id="sbc"></div>
+  <div class="sblbl">Demais Seleções</div>
+  <div id="sbo"></div>
+</div>
+<div class="main dm" id="dm">
+  <div id="dh"><div class="empty">👈 Selecione uma seleção para ver os prompts</div></div>
+  <div class="sf" id="sf" style="display:none"></div>
+  <button class="addbtn" id="ab" style="display:none" onclick="togAdd()">+ Adicionar Prompt</button>
+  <div class="addf" id="af">
+    <h4>Novo Prompt Personalizado</h4>
+    <input type="text" id="nfn" placeholder="Nome do estilo (ex: Aquarela / Festival)">
+    <textarea id="nfp" placeholder="Cole ou escreva o prompt completo aqui..."></textarea>
+    <div class="adfb">
+      <button class="bsv" onclick="saveNew()">💾 Salvar</button>
+      <button class="bcn" onclick="togAdd()">Cancelar</button>
+    </div>
+  </div>
+  <div class="grid" id="gr"></div>
+</div>
+<div class="sm" id="sm">
+  <div class="sprog">
+    <div class="sproginfo">
+      <span style="font-size:11px;color:var(--t2)" id="sc">Prompt 1</span>
+      <span style="font-size:11px;font-weight:700;color:var(--ac)" id="sp">0%</span>
+    </div>
+    <div class="sbar"><div class="sfill" id="sf2" style="width:0%"></div></div>
+  </div>
+  <div class="scard">
+    <div class="schdr">
+      <div class="scfl">
+        <span class="scflag" id="sfg">⚽</span>
+        <div><div class="scnm" id="snm">—</div><div class="scap" id="sap">—</div></div>
+      </div>
+      <div class="scsb" id="ssb">—</div>
+    </div>
+    <div class="scbody">
+      <div class="splbl">Prompt — clique para selecionar tudo</div>
+      <div class="bigp" id="bp" tabindex="0" onclick="this.focus();document.execCommand('selectAll')" title="Clique para selecionar tudo">—</div>
+    </div>
+    <div class="scact">
+      <button class="bprev" onclick="smv(-1)" id="bpv">← Ant.</button>
+      <button class="bcpbig" onclick="cpB()" id="bcb">📋 Copiar Prompt</button>
+      <button class="bmu" onclick="togUsedS()" id="bmu">✓ Marcar Usado</button>
+      <button class="bnxt" onclick="smv(1)" id="bnx">Próx. →</button>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const D={};
+const EC={1:'#f97316',2:'#3b82f6',3:'#a855f7',4:'#22c55e',5:'#ec4899',6:'#06b6d4',7:'#84cc16',8:'#ef4444',9:'#f59e0b',10:'#8b5cf6',11:'#f0c040'};
+let cur=null,mode='d',sfilt='all',seqI=0,seqL=[];
+function getU(){try{return JSON.parse(localStorage.getItem('pod_u')||'{}');}catch{return{};}}
+function setU(u){localStorage.setItem('pod_u',JSON.stringify(u));}
+function isU(id){return!!getU()[id];}
+function togU(id){const u=getU();u[id]?delete u[id]:u[id]=1;setU(u);updUC();}
+function updUC(){document.getElementById('uc').textContent=Object.keys(getU()).length;}
+function reg(o){D[o.id]=o;o.custom=JSON.parse(localStorage.getItem('cp_'+o.id)||'[]');}
+
+reg({id:'brasil',flag:'🇧🇷',nome:'Brasil',ap:'Canarinho',camp:true,tit:'1958·1962·1970·1994·2002',tn:5,cid:'Nova York · Filadélfia · Miami',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt graphic furious canary bird Canarinho Pistola battle stance claws sharp wings spread, Maracana stadium silhouette sun rays background, distressed halftone textures, aged gold yellow deep forest green palette, bold retro serif arc CANARINHO above BRASIL below, 1970 World Cup poster aesthetic, screen print grain, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear graphic fierce geometric angular canary bird head front-facing beak open war cry, Brazilian gold yellow deep green high contrast thick aggressive black outlines sharp angular feathers, graffiti lettering CANARINHO top BRASIL bottom, raw urban energy yellow-green-black palette no gradients, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster art furious Canarinho Pistola battle pose surrounded Brazilian carnival feathers tropical flowers coffee berries Ipanema waves Pelé silhouette soccer ball five golden stars, intricate botanical Art Nouveau line work vibrant gold yellow emerald green, CANARINHO BRASIL 2026 ornate tropical frame, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt single bold geometric angry canary bird silhouette wings spread attack position, flat design deep forest green bright gold yellow, CANARINHO BRASIL text below five dots for five titles, zero texture pure geometric, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (NY)','T-shirt graphic fierce Canarinho Pistola fused with New York City perched atop Empire State Building Manhattan skyline forming tail feathers Statue of Liberty torch in claw, BRASIL x NYC COPA 2026 lettering, Brazilian green yellow merging NYC grey gold, bold fusion illustration, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Miami)','T-shirt graphic fierce Canarinho Pistola foreground Miami skyline South Beach art deco background sunset palm trees, Brazilian gold yellow green foreground against Miami warm orange-pink tones, CANARINHO MIAMI 2026 bold arc lettering, clean layered composition, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Fila.)','T-shirt typographic art PHILADELPHIA constructed from Brazilian motifs letters formed canary feathers soccer balls coffee plants carnival elements fierce canary from letter P, Brazilian gold yellow green palette bold hand-drawn typography, BRASIL COPA 2026 subtitle, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Marrocos','Bold confrontational graphic fierce Canarinho Pistola face-to-face against Moroccan Atlas Lion Leoes do Atlas, divided composition Brazil gold-green left Morocco red-green right lightning bolt between, CANARINHO vs LEOES DO ATLAS BRASIL x MARROCOS lettering dramatic fight energy, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready graphic Canarinho Pistola enraged canary armored Brazilian green yellow claws unsheathed eyes burning war feathers spiked, CANARINHO PISTOLA blazing above BRASIL 2026 below distressed vintage lettering high contrast pure power, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Marrocos','Vintage boxing fight poster BRASIL vs MARROCOS 13 DE JUNHO NOVA YORK fierce Brazilian canary left facing Moroccan Atlas Lion right, dramatic spotlight bold distressed fight typography gold-green vs red-green, COPA DO MUNDO FIFA 2026 MetLife Stadium at bottom, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[11,'Legado — Rumo ao Hexa ★','Powerful legacy t-shirt Brazil five-time World Cup champion majestic furious Canarinho Pistola crowned five golden stars arc above, bold BRASIL center, 1958 1962 1970 1994 2002 elegant gold serif below, RUMO AO HEXA 2026 battle cry distressed letters bottom, emerald green and gold prestigious heritage warrior pride, isolated on flat vivid electric magenta #FF00FF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'argentina',flag:'🇦🇷',nome:'Argentina',ap:'Albiceleste',camp:true,tit:'1978·1986·2022',tn:3,cid:'Kansas City · Dallas · Guadalajara',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt fierce puma Albiceleste sky blue white stripes Sun of May halo Andes Obelisco background, distressed halftone sky blue white aged gold, bold retro arc ALBICELESTE above ARGENTINA below, 1978 1986 champion era poster, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric puma Albiceleste stripes front-facing snarl Sun of May chest, sky blue white high contrast thick black outlines, ALBICELESTE top ARGENTINA bottom graffiti raw Buenos Aires energy, blue-white-black no gradients, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster majestic puma Albiceleste stripes surrounded Argentine roses mate gourd condors tango dancers Caminito colors three golden stars, intricate line work sky blue white gold, ALBICELESTE ARGENTINA 2026 integrated, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt clean geometric puma silhouette Albiceleste stripes Sun of May chest, flat design sky blue white, ALBICELESTE ARGENTINA below three dots three titles, zero texture pure geometric, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (KC)','T-shirt graphic fierce Albiceleste puma fused Kansas City puma body formed by arch Union Station, Albiceleste stripes merging with city skyline, ALBICELESTE KANSAS CITY COPA 2026 lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Dallas)','T-shirt graphic fierce puma Albiceleste foreground Dallas skyline Reunion Tower background, sky blue white foreground dramatic Texas sunset, ALBICELESTE DALLAS 2026 arc lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Gdl)','T-shirt typographic art GUADALAJARA built from Argentinian motifs letters from Albiceleste stripes puma claws mate leaves tango petals fierce puma from letter G, sky blue white gold bold typography, ARGENTINA COPA 2026 subtitle, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Argélia','Bold confrontational graphic fierce Albiceleste puma face-to-face against Algerian Fennec Fox Raposas do Deserto, sky blue-white left vs green-white right lightning storm, ALBICELESTE vs RAPOSAS DO DESERTO ARGENTINA x ALGERIA lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready Albiceleste puma armored sky blue white stripes claws raised Sun of May chest war shield champion hunger, ALBICELESTE burning above ARGENTINA CAMPEÃ 2026 below distressed bold, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Jordânia','Vintage boxing fight poster ARGENTINA vs JORDAN 27 DE JUNHO DALLAS Albiceleste puma left Jordanian eagle right, dramatic spotlight bold distressed typography sky blue-white vs black-red, COPA DO MUNDO FIFA 2026 AT&T Stadium Dallas, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[11,'Legado — Tricampeã ★','Powerful legacy t-shirt Argentina three-time World Cup champion triumphant puma crowned three golden stars, ARGENTINA bold center Albiceleste stripes, 1978 1986 2022 gold arc below, TRICAMPEÃ DEFENDE O TÍTULO 2026 war cry distressed bottom, sky blue white gold palette, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'alemanha',flag:'🇩🇪',nome:'Alemanha',ap:'Die Mannschaft',camp:true,tit:'1954·1974·1990·2014',tn:4,cid:'Houston · Toronto · Nova York',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt powerful black German eagle Die Mannschaft war stance wings spread, Cologne Cathedral Black Forest background oak leaf wreath, distressed halftone black white gold aged steel, bold retro Bauhaus blackletter arc DIE MANNSCHAFT above DEUTSCHLAND below, 1954 1974 1990 2014 champion era poster, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric black German eagle front-facing, Die Mannschaft black-white-gold high contrast Bauhaus grid pattern feather structure, thick bold outlines, DIE MANNSCHAFT Bauhaus block letters top DEUTSCHLAND below, German precision urban energy, black-white-gold no gradients, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster majestic German black eagle Rhine valley surrounded oak leaves Neuschwanstein castle beer steins four gold stars four titles, intricate engraving line work black white gold, DIE MANNSCHAFT DEUTSCHLAND 2026 integrated, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt clean bold German black eagle silhouette, Bauhaus flat design black and gold, DIE MANNSCHAFT DEUTSCHLAND below four dots four titles, zero texture geometric precision, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (Houston)','T-shirt graphic fierce Die Mannschaft black eagle fused Houston eagle wings NASA Space Center silhouette, German black-white-gold merging Houston skyline, DIE MANNSCHAFT HOUSTON COPA 2026 lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Toronto)','T-shirt graphic fierce black German eagle foreground Toronto skyline CN Tower background, German black-white-gold dramatic Canadian sky maple leaves mixing oak leaves, DIE MANNSCHAFT TORONTO 2026 arc lettering, Bauhaus layered composition, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Houston)','T-shirt typographic art HOUSTON built from German motifs letters from eagle feathers oak leaf patterns Bauhaus geometric grid, fierce black eagle from letter H, black gold white bold Bauhaus hand-lettered, DIE MANNSCHAFT DEUTSCHLAND 2026 subtitle, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs C.Marfim','Bold confrontational Die Mannschaft black eagle face-to-face against Ivory Coast Elephant Os Elefantes, German black-white left vs Ivorian orange-white-green right, eagle talons vs elephant tusks, DIE MANNSCHAFT vs OS ELEFANTES ALEMANHA x COSTA DO MARFIM TORONTO lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready Die Mannschaft eagle full German black armor Bauhaus war patterns four gold stars battle crown, DIE MANNSCHAFT bold blackletter above DEUTSCHLAND RUMO AO PENTA 2026 below, German precision power, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs C.Marfim','Vintage boxing fight poster ALEMANHA vs COSTA DO MARFIM 20 DE JUNHO TORONTO Die Mannschaft eagle left vs Ivory Coast elephant right, Bauhaus composition bold distressed blackletter, black-white-gold vs orange-white-green, COPA DO MUNDO FIFA 2026 BMO Field Toronto, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[11,'Legado — Rumo ao Penta ★','Powerful legacy t-shirt Germany four-time World Cup champion majestic black eagle crowned four golden stars, Bauhaus DEUTSCHLAND center, 1954 1974 1990 2014 gold arc below, TETRACAMPEÃ RUMO AO PENTA 2026 bold blackletter distressed bottom, black gold Bauhaus heritage, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'franca',flag:'🇫🇷',nome:'França',ap:'Les Bleus',camp:true,tit:'1998·2018',tn:2,cid:'Nova York · Filadélfia · Boston',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt proud fierce Gallic rooster Le Coq Gaulois deep blue plumage Eiffel Tower Arc de Triomphe background fleur-de-lis frame, distressed halftone deep royal blue white red tricolor aged gold, bold retro French Art Deco arc LES BLEUS above FRANCE below, 1998 2018 champion era poster, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric Gallic rooster Les Bleus deep blue French tricolor high contrast Parisian architecture pattern forming crest feathers, thick black outlines LES BLEUS top FRANCE bottom graffiti raw Paris energy, blue-white-red-black no gradients, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster majestic Les Bleus Gallic rooster surrounded lavender fields Eiffel Tower wine fleur-de-lis two gold stars baguettes berets, intricate Art Nouveau Belle Epoque line work deep blue white red gold, LES BLEUS FRANCE 2026 decorative frame, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt clean bold Les Bleus Gallic rooster silhouette single fleur-de-lis, flat design tricolor blue white red, LES BLEUS FRANCE below two dots two titles, zero texture modern French elegance, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (NY)','T-shirt graphic fierce Les Bleus Gallic rooster fused with New York City rooster feathers Manhattan skyline Brooklyn Bridge Statue of Liberty torch merged raised talon, LES BLEUS NEW YORK COPA 2026 lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Boston)','T-shirt graphic fierce Les Bleus rooster foreground Boston skyline Fenway Park Bunker Hill background, French deep blue white foreground New England autumn sky, LES BLEUS BOSTON 2026 arc lettering Art Nouveau composition, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Fila.)','T-shirt typographic art PHILADELPHIA built from French motifs letters from fleur-de-lis patterns rooster feathers Art Nouveau vine tricolor ribbons fierce rooster from letter P, deep blue-white-red gold bold Art Nouveau hand-lettered, LES BLEUS FRANCE 2026 subtitle, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Senegal','Bold confrontational Les Bleus Gallic rooster face-to-face against Senegalese Lion Leoes de Teranga, French rooster deep blue-white left vs Senegalese lion green-yellow-red right, LES BLEUS vs LEOES DE TERANGA FRANCE x SENEGAL NEW YORK lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready Les Bleus Gallic rooster deep blue war plumage spiked two gold stars chest battle medals beak open war cry, LES BLEUS blazing gold above FRANCE BICAMPEÃ 2026 below, champion defending throne, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Senegal','Vintage boxing fight poster FRANCE vs SENEGAL 16 DE JUNHO NEW YORK Les Bleus rooster left Leoes de Teranga lion right, Art Deco spotlight bold distressed typography, deep blue-white-red vs green-yellow-red, COPA DO MUNDO FIFA 2026 MetLife Stadium NJ, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[11,'Legado — Rumo ao Tri ★','Powerful legacy t-shirt France two-time World Cup champion triumphant Gallic rooster crowned two golden stars, deep blue FRANCE center tricolor stripes, 1998 2018 gold arc below, BICAMPEÃ RUMO AO TRI 2026 bold distressed bottom, deep blue-white-red-gold prestigious French heritage, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'inglaterra',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',nome:'Inglaterra',ap:'Three Lions',camp:true,tit:'1966',tn:1,cid:'Dallas · Filadélfia · Boston',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt three fierce roaring lions heraldic formation, Big Ben Tower of London background Tudor rose motifs, distressed halftone deep crimson red white aged gold navy, bold retro serif arc THREE LIONS above ENGLAND below, 1966 World Cup glory era poster, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear three fierce geometric lion heads triangular formation, English red white high contrast Union Jack geometric chevron forming manes, thick black outlines, THREE LIONS top ENGLAND bottom graffiti raw London energy, red-white-black no gradients, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster three majestic lions heraldic pose surrounded red roses crown motifs Tower Bridge double-decker bus royal ornaments one gold star England sole title, intricate heraldic line work red white gold, THREE LIONS ENGLAND 2026 heraldic frame, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt three clean geometric lion silhouettes classic heraldic row with crown above, flat design crimson red white, THREE LIONS ENGLAND below, zero texture regal modern design, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (Dallas)','T-shirt graphic Three Lions fused with Dallas three lion manes forming AT&T Stadium dome Texan lone star merging English cross of Saint George, THREE LIONS DALLAS COPA 2026 lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Boston)','T-shirt graphic three fierce lions foreground Boston skyline Bunker Hill Fenway Park background, English crimson red white foreground New England sky, THREE LIONS BOSTON 2026 arc lettering heraldic composition, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Dallas)','T-shirt typographic art DALLAS built from English motifs letters from lion mane fur Tudor rose petals crown jewels red rose elements, three fierce lion heads from letters D A S, crimson red white gold bold heraldic hand-lettered, THREE LIONS ENGLAND 2026 subtitle, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Croácia','Bold confrontational Three Lions facing off against Vatreni Croacia checkered dragon, three English lions red-white left vs Croatian fire dragon checkered right, lions vs dragon midair clash, THREE LIONS vs VATRENI ENGLAND x CROATIA DALLAS lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready Three Lions all three lions synchronized battle roar red war paint striping manes one gold star on crown above like unreachable dream, THREE LIONS blazing above ENGLAND 60 ANOS DE FOME 2026 below distressed bold, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Croácia','Vintage boxing fight poster ENGLAND vs CROATIA 17 DE JUNHO DALLAS Three Lions left Vatreni dragon right, dramatic spotlight bold distressed fight typography, red-white vs checkered red-white, COPA DO MUNDO FIFA 2026 AT&T Stadium Dallas, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[11,'Legado — 60 Anos de Fome ★','Powerful legacy t-shirt England one-time World Cup champion three lions surrounding single massive golden star, crimson bold ENGLAND center, solitary 1966 massive gold serif lettering below, 60 ANOS DE ESPERA LEOES FAMINTOS 2026 distressed letters bottom, single star making hunger feel even greater red-white-gold, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'espanha',flag:'🇪🇸',nome:'Espanha',ap:'La Furia Roja',camp:true,tit:'2010',tn:1,cid:'Atlanta · Houston · Guadalajara',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt fierce charging bull draped La Roja deep red flamenco dancer Sagrada Familia Alhambra background, distressed halftone deep crimson red golden yellow aged ivory, bold retro arc LA FURIA ROJA above ESPAÑA below, 2010 champion era poster, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric La Roja bull head front-facing, Spanish red golden yellow high contrast Alhambra Moorish tile patterns horns and face, thick black outlines, LA FURIA ROJA top ESPAÑA bottom graffiti, red-yellow-black no gradients, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster powerful La Roja bull surrounded flamenco roses Alhambra tile patterns paella olive branches sangria Gaudi architecture ornaments one gold star, intricate Moorish arabesque line work deep red golden yellow ivory, LA FURIA ROJA ESPAÑA 2026 ornate frame, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt clean bold La Roja bull silhouette Moorish geometric accent, flat design deep crimson red golden yellow, LA FURIA ROJA ESPAÑA below one dot for the title, zero texture modern Spanish bold, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (Atlanta)','T-shirt graphic fierce La Roja bull fused Atlanta bull red body incorporating Centennial Olympic Park Georgia peach motif mixed Spanish red Moorish tile merging Southern US design, LA FURIA ROJA ATLANTA COPA 2026 lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Guadalajara)','T-shirt graphic fierce La Roja bull foreground Guadalajara skyline Catedral Tequila agave background, Spanish red yellow foreground warm Mexican sunset flamenco roses mixing marigolds, LA FURIA ROJA GUADALAJARA 2026 arc lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Atlanta)','T-shirt typographic art ATLANTA built from Spanish motifs letters from Moorish arabesque patterns flamenco rose petals bull horn curves La Roja ribbon elements, fierce bull from letter A, deep red golden yellow bold Andalusian flair, LA FURIA ROJA ESPAÑA 2026 subtitle, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Uruguai','Bold confrontational La Roja Spanish bull face-to-face against La Celeste Uruguayan bull, Spanish red-gold left vs Uruguayan sky-blue-white right two bulls locking horns, LA FURIA ROJA vs LA CELESTE ESPAÑA x URUGUAI GUADALAJARA lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready La Furia Roja bull crimson red war paint Moorish war patterns one gold star blazing forehead hooves raised, LA FURIA ROJA blazing gold above ESPAÑA CAMPEÃ 2026 below, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Uruguai','Vintage boxing fight poster ESPAÑA vs URUGUAI 26 DE JUNHO GUADALAJARA La Furia Roja bull left vs Celeste bull right, Spanish colonial composition bold distressed typography, red-yellow vs sky blue-white, COPA DO MUNDO FIFA 2026 Estadio Akron Guadalajara, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[11,'Legado — Rumo ao Bi ★','Powerful legacy t-shirt Spain one-time World Cup champion fierce La Roja bull single massive golden star Moorish tile frame, bold crimson ESPAÑA center, solitary 2010 large gold serif Alhambra pattern background, CAMPEÃ DO MUNDO LA FURIA ROJA RUMO AO BI distressed bold bottom, deep red golden ivory Andalusian heritage, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'uruguai',flag:'🇺🇾',nome:'Uruguai',ap:'La Celeste',camp:true,tit:'1930·1950',tn:2,cid:'Miami · Houston · Guadalajara',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt fierce charging La Celeste sky blue bull Sol de Mayo sun halo, Estadio Centenario Punta del Este lighthouse background gaucho hat mate motifs, distressed halftone sky blue white aged gold, bold retro arc LA CELESTE above URUGUAY below, 1930 1950 Maracanazo champion era poster, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric La Celeste sky blue bull front-facing Sol de Mayo sun pattern on body, sky blue white high contrast thick black outlines, LA CELESTE top URUGUAY bottom graffiti raw Montevideo energy, sky blue-white-black no gradients, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster majestic La Celeste bull Sol de Mayo crown surrounded gaucho horseback yerba mate tango dancers Rio de la Plata waves two gold stars Maracanazo 1950 tribute, intricate South American illustration sky blue white gold, LA CELESTE URUGUAY 2026 integrated, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt clean geometric La Celeste bull silhouette Sol de Mayo chest, flat design sky blue white, LA CELESTE URUGUAY below two dots two titles, zero texture, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (Miami)','T-shirt graphic fierce La Celeste bull fused Miami sky blue body incorporating Miami Art Deco South Beach architecture ocean waves palm trees merged Celeste stripes Sol de Mayo over Biscayne Bay, LA CELESTE MIAMI COPA 2026 lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Guadalajara)','T-shirt graphic fierce La Celeste bull foreground Guadalajara skyline Catedral agave fields background, sky blue white foreground warm Mexican sunset gaucho rope mixed mariachi elements, LA CELESTE GUADALAJARA 2026 arc lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Miami)','T-shirt typographic art MIAMI built from Uruguayan motifs letters from Celeste stripes Sol de Mayo rays gaucho rope curves mate leaf elements fierce La Celeste bull from letter M, sky blue white gold bold hand-lettered, LA CELESTE URUGUAY 2026 subtitle, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Espanha','Bold confrontational La Celeste Uruguayan bull face-to-face against La Furia Roja Spanish bull, sky blue-white left vs red-yellow right two bulls locking horns, LA CELESTE vs LA FURIA ROJA URUGUAI x ESPANHA GUADALAJARA lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready La Celeste bull sky blue war paint Sol de Mayo blazing forehead two gold stars fueling fire hooves raised, LA CELESTE blazing above URUGUAY GARRA CHARRUA 2026 below distressed bold, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Espanha','Vintage boxing fight poster URUGUAI vs ESPANHA 26 DE JUNHO GUADALAJARA La Celeste bull left La Furia Roja bull right, bold distressed fight typography, sky blue-white vs red-yellow, COPA DO MUNDO FIFA 2026 Estadio Akron Guadalajara, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[11,'Legado — Garra Charrua ★','Powerful legacy t-shirt Uruguay two-time World Cup champion fierce La Celeste bull crowned two golden stars Maracanazo wave behind, bold sky blue URUGUAY center, 1930 1950 gold arc lettering Maracanazo tribute frame, BICAMPEÃO GARRA CHARRUA ETERNA 2026 distressed bold bottom, sky blue gold historical pride, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'mexico',flag:'🇲🇽',nome:'México',ap:'El Tri',camp:false,tit:null,tn:0,cid:'CDMX · Guadalajara · Monterrey',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt fierce Aztec eagle warrior clutching serpent El Tri green-white-red plumage, Estadio Azteca Teotihuacan pyramid background Aztec calendar frame, distressed halftone deep green white red aged terracotta, bold retro arc EL TRI above MÉXICO below, 1970 1986 host poster aesthetic, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric Aztec eagle head front-facing El Tri green-white-red tricolor, Aztec geometric sun stone patterns forming feathers thick black outlines, EL TRI top MÉXICO bottom graffiti Aztec warrior energy meets Mexico City street art, green-white-red-black no gradients, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster majestic Aztec eagle warrior surrounded El Tri tricolor ribbons Aztec calendar glyphs marigolds sugar skulls cactus Teotihuacan Lucha Libre masks mariachi instruments, intricate Aztec codex illustration deep green white red gold, EL TRI MÉXICO 2026 with Aztec glyph elements, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt clean geometric Aztec eagle silhouette El Tri tricolor stripe accent, flat design palette green white red, EL TRI MÉXICO below, zero texture Aztec geometric influence, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (CDMX)','T-shirt graphic fierce El Tri Aztec eagle fused with Mexico City eagle wings spreading into Angel de la Independencia Estadio Azteca dome forming eagle chest Popocatepetl background green-white-red plumage, EL TRI CIUDAD DE MEXICO COPA 2026 lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Guadalajara)','T-shirt graphic fierce Aztec eagle El Tri colors foreground Guadalajara skyline Catedral Tequila agave fields background, Mexican green-white-red foreground warm terracotta sky, EL TRI GUADALAJARA 2026 arc lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (CDMX)','T-shirt typographic art CIUDAD DE MEXICO built from Mexican motifs letters from Aztec geometric patterns cactus thorns marigold petals El Tri ribbons fierce eagle from letter C, green-white-red obsidian bold hand-lettered, EL TRI COPA 2026 ABERTURA subtitle, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Coreia','Bold confrontational fierce El Tri Aztec eagle face-to-face against Korean Taeguk warrior Guerreiros Taeguk, Aztec eagle El Tri plumage left vs Korean warrior blue-red right Aztec patterns meet Korean patterns center, EL TRI vs GUERREIROS TAEGUK MÉXICO x COREIA GUADALAJARA lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready El Tri eagle full Aztec warrior regalia green-white-red war feathers blazing serpent crushed Aztec war paint on beak, EL TRI burning above MÉXICO ANFITRIÃO 2026 below bold Aztec-inspired distressed lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster — ABERTURA','Vintage boxing fight poster MÉXICO vs AFRICA DO SUL 11 DE JUNHO CIDADE DO MEXICO historic opening match El Tri Aztec eagle left vs Bafana Bafana right Estadio Azteca background, JOGO DE ABERTURA COPA DO MUNDO FIFA 2026 headline bold distressed lettering, isolated on flat vivid electric cyan #00FFFF solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'japao',flag:'🇯🇵',nome:'Japão',ap:'Samurai Blue',camp:false,tit:null,tn:0,cid:'Vancouver · Dallas · San Francisco',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt fierce samurai warrior Samurai Blue armor glowing blue eyes raised katana, Mount Fuji rising sun bursting background cherry blossom koi fish frame, distressed halftone ukiyo-e influence deep navy blue white aged indigo, bold retro Japanese arc SAMURAI BLUE above kanji, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric samurai helmet kabuto front-facing glowing eyes, Samurai Blue navy white high contrast origami patterns forming helmet, thick black outlines, SAMURAI BLUE Japanese street art lettering kanji JAPAN below, raw Tokyo urban meets warrior spirit, navy-white-black no gradients, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster fierce samurai Samurai Blue armor surrounded cherry blossoms torii gate Hokusai waves origami cranes koi fish bamboo katana Mount Fuji, intricate ukiyo-e woodblock illustration deep navy blue white crimson, SAMURAI BLUE JAPAN 2026 with kanji, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt single bold geometric samurai helmet kabuto silhouette hinomaru red circle on forehead, flat design navy blue white, SAMURAI BLUE JAPAN below Japanese characters, zero texture Zen-inspired minimal design, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (Vancouver)','T-shirt graphic fierce Samurai Blue warrior fused with Vancouver samurai armor incorporating Lions Gate Bridge Pacific mountains integrated cherry blossoms mixing with maple leaves, SAMURAI BLUE VANCOUVER COPA 2026 lettering East-meets-West fusion, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Dallas)','T-shirt graphic fierce Samurai Blue warrior foreground Dallas skyline Reunion Tower background, Japanese navy blue white foreground dramatic Texas sunset amber cherry blossom petals floating, SAMURAI BLUE DALLAS 2026 arc lettering ukiyo-e inspired layered composition, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Vancouver)','T-shirt typographic art VANCOUVER constructed from Japanese motifs letters from samurai sword blades origami folds cherry blossom petals wave patterns fierce samurai helmet from letter V, navy blue white crimson, bold Japanese calligraphy-influenced typography, SAMURAI BLUE JAPAN 2026 kanji subtitle, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Holanda','Bold confrontational Samurai Blue warrior face-to-face against Dutch Oranje Laranja Mecanica lion, navy samurai left vs armored orange lion right, katana vs lion claw midair clash East vs West epic, SAMURAI BLUE vs LARANJA MECANICA JAPAO x HOLANDA DALLAS lettering, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready Samurai Blue warrior full kabuto helmet glowing eyes hinomaru armor katana raised battle cry cherry blossoms swirling, SAMURAI BLUE blazing Japanese calligraphy above JAPAN 2026 BUSHIDO below bold distressed, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Holanda','Vintage boxing fight poster JAPAO vs HOLANDA 14 DE JUNHO DALLAS Samurai Blue warrior left Oranje lion right, dramatic spotlight bold distressed typography mixing Japanese Western styles, navy-white vs orange-black, COPA DO MUNDO FIFA 2026 AT&T Stadium Dallas, isolated on flat vivid electric orange #FF4500 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+reg({id:'portugal',flag:'🇵🇹',nome:'Portugal',ap:'As Quinas',camp:false,tit:null,tn:0,cid:'Houston · Miami',p:[
+[1,'Vintage/Retro','Vintage retro t-shirt proud fierce Galo de Barcelos rooster war stance Quinas shield pattern on chest, Belem Tower Atlantic waves background fado guitar azulejo tile frame, distressed halftone deep forest green rich red aged gold, bold retro arc AS QUINAS above PORTUGAL below, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[2,'Bold/Streetwear','Bold streetwear fierce geometric Galo de Barcelos rooster Quinas shield on body, Portuguese green red high contrast azulejo tile diamond patterns forming feathers, thick black outlines, AS QUINAS top PORTUGAL bottom graffiti raw Lisbon energy, green-red-black no gradients, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[3,'Illustrative/Poster','Highly detailed illustrative poster fierce Galo de Barcelos surrounded azulejo tile patterns Belem Tower pasteis de nata fado guitar cork oak branches Atlantic waves five Quinas shields powerful crest, intricate Manueline borders deep green red gold, AS QUINAS PORTUGAL 2026 lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[4,'Minimalista','Minimalist t-shirt clean geometric Galo de Barcelos rooster silhouette five dots Quinas on chest, flat design deep green red, AS QUINAS PORTUGAL below, zero texture pure geometric, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[5,'Cidade+Fusão (Houston)','T-shirt graphic fierce Galo de Barcelos fused Houston rooster tail feathers forming Houston skyline Space Center rocket integrated, AS QUINAS HOUSTON COPA 2026 lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[6,'Cidade+Skyline (Miami)','T-shirt graphic fierce Galo de Barcelos foreground Miami art deco skyline Biscayne Bay background, Portuguese green red foreground Miami turquoise blues palm trees framing, AS QUINAS MIAMI 2026 arc lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[7,'Cidade+Tipografia (Houston)','T-shirt typographic art HOUSTON built from Portuguese motifs letters from azulejo tile patterns rooster feathers Quinas shields cork oak leaves, fierce Galo de Barcelos from letter H, green red gold bold hand-lettered, AS QUINAS PORTUGAL 2026 subtitle, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[8,'Duelo vs Colômbia','Bold confrontational Portuguese Galo de Barcelos face-to-face against Colombian Condor La Cafetera, rooster green-red Quinas left vs condor yellow-blue-red right two birds midair confrontation, AS QUINAS vs LA CAFETERA PORTUGAL x COLOMBIA MIAMI lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[9,'Em Guerra','Fierce battle-ready Galo de Barcelos azulejo war paint five Quinas shields blazing chest claws sharp battle cry beak open, AS QUINAS burning above PORTUGAL 2026 FOME DE GLÓRIA below distressed bold lettering, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+[10,'Fight Poster vs Colômbia','Vintage boxing fight poster PORTUGAL vs COLOMBIA 27 DE JUNHO MIAMI Galo de Barcelos left Colombian Condor right, bold distressed typography, green-red vs yellow-blue-red, COPA DO MUNDO FIFA 2026 Hard Rock Stadium Miami, isolated on flat vivid electric lime #CCFF00 solid background sharp clean edge, 4500x5400px 300dpi print-ready POD'],
+]});
+// Seleções restantes com prompts compactos inteligentes
+const REST=[
+  {id:'holanda',flag:'🇳🇱',nome:'Holanda',ap:'Laranja Mecânica',cid:'Houston · Dallas · Kansas City',fc:'#FF00FF'},
+  {id:'belgica',flag:'🇧🇪',nome:'Bélgica',ap:'Diabos Vermelhos',cid:'Los Angeles · Seattle · Vancouver',fc:'#CCFF00'},
+  {id:'marrocos',flag:'🇲🇦',nome:'Marrocos',ap:'Leões do Atlas',cid:'Nova York · Boston · Atlanta',fc:'#00FFFF'},
+  {id:'escocia',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',nome:'Escócia',ap:'Tartan Army',cid:'Boston · Miami',fc:'#FF4500'},
+  {id:'noruega',flag:'🇳🇴',nome:'Noruega',ap:'Vikings',cid:'Boston · Nova York · Toronto',fc:'#00FFFF'},
+  {id:'coreia',flag:'🇰🇷',nome:'Coreia do Sul',ap:'Guerreiros Taeguk',cid:'Guadalajara · Dallas · Monterrey',fc:'#FF4500'},
+  {id:'australia',flag:'🇦🇺',nome:'Austrália',ap:'Socceroos',cid:'Vancouver · Seattle · San Francisco',fc:'#FF00FF'},
+  {id:'senegal',flag:'🇸🇳',nome:'Senegal',ap:'Leões de Teranga',cid:'Nova York · Boston · Toronto',fc:'#00FFFF'},
+  {id:'colombia',flag:'🇨🇴',nome:'Colômbia',ap:'La Cafetera',cid:'Guadalajara · Filadélfia · Miami',fc:'#FF00FF'},
+  {id:'canada',flag:'🇨🇦',nome:'Canadá',ap:'Canucks',cid:'Toronto · Vancouver',fc:'#00FFFF'},
+  {id:'eua',flag:'🇺🇸',nome:'Estados Unidos',ap:'Stars and Stripes',cid:'Los Angeles · Seattle · Dallas',fc:'#CCFF00'},
+  {id:'africa_sul',flag:'🇿🇦',nome:'África do Sul',ap:'Bafana Bafana',cid:'CDMX · Guadalajara · Monterrey',fc:'#FF00FF'},
+  {id:'gana',flag:'🇬🇭',nome:'Gana',ap:'Estrelas Negras',cid:'Toronto · Filadélfia · Dallas',fc:'#00FFFF'},
+  {id:'costa_marfim',flag:'🇨🇮',nome:'Costa do Marfim',ap:'Os Elefantes',cid:'Toronto · Filadélfia · Houston',fc:'#FF00FF'},
+  {id:'catar',flag:'🇶🇦',nome:'Catar',ap:'Os Carmesins',cid:'Vancouver · San Francisco · Seattle',fc:'#CCFF00'},
+  {id:'arabia',flag:'🇸🇦',nome:'Arábia Saudita',ap:'Falcões Verdes',cid:'Miami · Houston · Guadalajara',fc:'#FF4500'},
+  {id:'equador',flag:'🇪🇨',nome:'Equador',ap:'La Tri',cid:'Filadélfia · Kansas City · Nova York',fc:'#00FFFF'},
+  {id:'paraguai',flag:'🇵🇾',nome:'Paraguai',ap:'Guaranis',cid:'Los Angeles · San Francisco · Dallas',fc:'#FF00FF'},
+  {id:'haiti',flag:'🇭🇹',nome:'Haiti',ap:'Granadeiros',cid:'Boston · Filadélfia · Atlanta',fc:'#CCFF00'},
+  {id:'panama',flag:'🇵🇦',nome:'Panamá',ap:'Maré Vermelha',cid:'Toronto · Filadélfia · Nova York',fc:'#CCFF00'},
+  {id:'nz',flag:'🇳🇿',nome:'Nova Zelândia',ap:'All Whites',cid:'Vancouver · Seattle',fc:'#FF00FF'},
+  {id:'ira',flag:'🇮🇷',nome:'Irã',ap:'Team Melli',cid:'Los Angeles · Seattle',fc:'#00FFFF'},
+  {id:'tunisia',flag:'🇹🇳',nome:'Tunísia',ap:'Águias de Cartago',cid:'Monterrey · Dallas · Kansas City',fc:'#CCFF00'},
+  {id:'turquia',flag:'🇹🇷',nome:'Turquia',ap:'Crescente e Estrela',cid:'San Francisco · Dallas · Los Angeles',fc:'#00FFFF'},
+  {id:'algeria',flag:'🇩🇿',nome:'Argélia',ap:'Raposas do Deserto',cid:'Monterrey · Kansas City · Dallas',fc:'#FF4500'},
+  {id:'jordania',flag:'🇯🇴',nome:'Jordânia',ap:'Os Bravos',cid:'San Francisco · Dallas · Kansas City',fc:'#00FFFF'},
+  {id:'uzbequistao',flag:'🇺🇿',nome:'Uzbequistão',ap:'Lobos Brancos',cid:'Guadalajara · Houston · Miami',fc:'#FF4500'},
+  {id:'iraque',flag:'🇮🇶',nome:'Iraque',ap:'Leões da Mesopotâmia',cid:'Boston · Nova York · Toronto',fc:'#00FFFF'},
+  {id:'cabo_verde',flag:'🇨🇻',nome:'Cabo Verde',ap:'Tubarões Azuis',cid:'Houston · Guadalajara · Miami',fc:'#FF4500'},
+  {id:'curacao',flag:'🇨🇼',nome:'Curaçao',ap:'—',cid:'Houston · Toronto · Nova York',fc:'#CCFF00'},
+];
+REST.forEach(m=>{
+  const cidade1=m.cid.split('·')[0].trim();
+  reg({id:m.id,flag:m.flag,nome:m.nome,ap:m.ap,camp:false,tit:null,tn:0,cid:m.cid,p:[
+    [1,'Vintage/Retro',`Vintage retro t-shirt graphic fierce ${m.ap} symbol of ${m.nome} national football team, iconic national elements and cultural motifs in background, distressed halftone textures, national color palette with aged tones, bold retro arc typography ${m.ap.toUpperCase()} above ${m.nome.toUpperCase()} below, vintage international poster aesthetic, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [2,'Bold/Streetwear',`Bold streetwear graphic fierce geometric ${m.ap} symbol front-facing representing ${m.nome}, national colors high contrast thick bold outlines, ${m.ap.toUpperCase()} top ${m.nome.toUpperCase()} bottom graffiti lettering, raw urban energy national palette no gradients, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [3,'Illustrative/Poster',`Highly detailed illustrative poster art featuring ${m.ap} symbol of ${m.nome} surrounded by iconic national cultural elements landmarks and football motifs, intricate detailed line work national color palette rich detail, ${m.ap.toUpperCase()} ${m.nome.toUpperCase()} 2026 lettering integrated ornate frame, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [4,'Minimalista',`Minimalist t-shirt graphic single bold geometric ${m.ap} symbol silhouette of ${m.nome}, flat design national two-color palette, ${m.ap.toUpperCase()} ${m.nome.toUpperCase()} text below, zero texture pure geometric modern design, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [5,`Cidade+Fusão (${cidade1})`,`T-shirt graphic fierce ${m.ap} symbol of ${m.nome} fused with ${cidade1} city iconography, national symbol merging with local city landmarks and architecture, ${m.ap.toUpperCase()} ${cidade1.toUpperCase()} COPA 2026 lettering, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [6,`Cidade+Skyline (${cidade1})`,`T-shirt graphic fierce ${m.ap} symbol foreground, ${cidade1} city skyline and landmarks in background, national colors foreground against dramatic city sky, ${m.ap.toUpperCase()} ${cidade1.toUpperCase()} 2026 arc lettering above, clean layered composition, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [7,`Cidade+Tipografia (${cidade1})`,`T-shirt typographic art ${cidade1.toUpperCase()} constructed from ${m.nome} football cultural motifs letters formed by national symbols and ${m.ap} elements, national color palette bold expressive hand-drawn typography, ${m.ap.toUpperCase()} ${m.nome.toUpperCase()} 2026 subtitle, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [8,'Duelo (Principal)',`Bold confrontational t-shirt graphic ${m.ap} symbol of ${m.nome} in fierce face-to-face battle stance against main group rival, ${m.nome} national colors on left vs rival national colors on right, central lightning bolt clash between both symbols, ${m.ap.toUpperCase()} vs RIVAL ${m.nome.toUpperCase()} x ADVERSÁRIO lettering dramatic fight energy, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [9,'Em Guerra',`Fierce battle-ready t-shirt graphic ${m.ap} symbol of ${m.nome} in full war mode, national war paint battle armor eyes burning with fire, ${m.ap.toUpperCase()} blazing above ${m.nome.toUpperCase()} 2026 RUMO À GLÓRIA below distressed bold lettering, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+    [10,'Fight Poster',`Vintage boxing fight poster t-shirt graphic ${m.nome.toUpperCase()} vs ADVERSÁRIO DATA ${cidade1.toUpperCase()} ${m.ap} symbol on left corner vs rival symbol on right, dramatic spotlight bold distressed fight poster typography, national colors vs rival colors, COPA DO MUNDO FIFA 2026 ESTÁDIO ${cidade1.toUpperCase()} at bottom, isolated on flat vivid solid background ${m.fc} sharp clean edge, 4500x5400px 300dpi print-ready POD`],
+  ]});
+});
+// FUNÇÕES
+function getU(){try{return JSON.parse(localStorage.getItem('pod_u')||'{}');}catch{return{};}}
+function setU(u){localStorage.setItem('pod_u',JSON.stringify(u));}
+function isU(id){return!!getU()[id];}
+function togU(id){const u=getU();u[id]?delete u[id]:u[id]=1;setU(u);updUC();}
+function updUC(){document.getElementById('uc').textContent=Object.keys(getU()).length;}
+function aP(s){return[...(s.p||[]),...(s.custom||[])];}
+function buildSB(){
+  const ch=Object.values(D).filter(s=>s.camp);
+  const ot=Object.values(D).filter(s=>!s.camp);
+  document.getElementById('sbc').innerHTML=ch.map(siEl).join('');
+  document.getElementById('sbo').innerHTML=ot.map(siEl).join('');
+  document.getElementById('tp').textContent=Object.values(D).reduce((a,s)=>a+aP(s).length,0);
+  updUC();
+}
+function siEl(s){const tp=aP(s).length;return`<div class="si" id="si-${s.id}" onclick="selSel('${s.id}')"><span class="sif">${s.flag}</span><div class="si-info"><div class="sin">${s.nome}${s.camp?`<span class="cb">${s.tn}x</span>`:''}</div><div class="sia">${s.ap}</div></div><span class="sic">${tp}</span></div>`;}
+function selSel(id){
+  document.querySelectorAll('.si').forEach(e=>e.classList.remove('on'));
+  const el=document.getElementById('si-'+id);
+  if(el){el.classList.add('on');el.scrollIntoView({block:'nearest'});}
+  cur=id;renderDash();
+}
+function renderDash(){
+  if(!cur)return;
+  const s=D[cur];
+  document.getElementById('dh').innerHTML=`<div class="stitle"><span>${s.flag}</span>${s.nome}</div><div class="smeta"><span class="mt">${s.ap}</span><span class="mt">📍 ${s.cid}</span>${s.camp?`<span class="mt g">★ ${s.tit}</span>`:''}<span class="mt v">${aP(s).length} prompts</span></div>`;
+  const sf=document.getElementById('sf');sf.style.display='flex';
+  sf.innerHTML=`<button class="fb${sfilt==='all'?' on':''}" onclick="setSF('all',this)">Todos</button>${[...new Set(aP(s).map(p=>p[0]))].map(e=>`<button class="fb${sfilt===e?' on':''}" onclick="setSF(${e},this)" style="color:${EC[e]||'#888'}">${aP(s).find(p=>p[0]===e)?.[1]||'#'+e}</button>`).join('')}`;
+  document.getElementById('ab').style.display='';
+  renderGrid();
+}
+function setSF(v,btn){sfilt=v;document.querySelectorAll('#sf .fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderGrid();}
+function renderGrid(){
+  if(!cur)return;
+  const s=D[cur];
+  const all=aP(s);
+  const filtered=sfilt==='all'?all:all.filter(p=>p[0]===sfilt);
+  document.getElementById('gr').innerHTML=filtered.map(p=>{
+    const uid=cur+'_'+p[0]+'_'+p[1].replace(/\W/g,'');
+    const used=isU(uid);
+    return`<div class="pc${used?' used':''}" id="pc-${uid}"><div class="pch"><span class="pcn" style="color:${EC[p[0]]||'#888'}">${p[1]}</span><div class="pcb">${used?'<span class="ubadge">✓ usado</span>':''}<span class="pcnum">#${p[0]}</span></div></div><div class="pcbody"><div class="ptxt" id="pt-${uid}">${p[2]}</div><textarea class="pedit" id="pe-${uid}">${p[2]}</textarea></div><div class="pcf"><button class="btn bcp" onclick="cp(this,'${uid}')">📋 Copiar</button><button class="btn bed" id="bed-${uid}" onclick="togEd('${uid}')">✏️ Editar</button><button class="btn bsave" id="bsv-${uid}" onclick="saveEd('${cur}',${p[0]},'${p[1].replace(/'/g,"\\'")}','${uid}')">💾 Salvar</button><button class="btn bex" onclick="execP(${p[0]},'${p[1].replace(/'/g,"\\'")}')">▶</button><button class="btn busedtgl ${used?'on':''}" onclick="togUsedCard('${uid}',this)">${used?'✓ Usado':'Marcar'}</button></div></div>`;
+  }).join('');
+}
+function cp(btn,uid){
+  const t=document.getElementById('pt-'+uid)?.textContent||'';
+  navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copiado!';btn.classList.add('ok');setTimeout(()=>{btn.textContent='📋 Copiar';btn.classList.remove('ok');},2000);});
+}
+function togEd(uid){
+  const pt=document.getElementById('pt-'+uid);
+  const pe=document.getElementById('pe-'+uid);
+  const bed=document.getElementById('bed-'+uid);
+  const bsv=document.getElementById('bsv-'+uid);
+  const editing=pe.style.display==='block';
+  pt.style.display=editing?'':undefined;
+  if(editing)pt.removeAttribute('style');else pt.style.display='none';
+  pe.style.display=editing?'none':'block';
+  bed.textContent=editing?'✏️ Editar':'✏️ Cancelar';
+  bsv.style.display=editing?'none':'inline-block';
+}
+function saveEd(selId,ei,eName,uid){
+  const s=D[selId];
+  const newTxt=document.getElementById('pe-'+uid).value;
+  const p=aP(s).find(x=>x[0]===ei&&x[1]===eName);
+  if(p)p[2]=newTxt;
+  document.getElementById('pt-'+uid).textContent=newTxt;
+  togEd(uid);
+}
+function togUsedCard(uid,btn){
+  togU(uid);const used=isU(uid);
+  btn.textContent=used?'✓ Usado':'Marcar';btn.classList.toggle('on',used);
+  document.getElementById('pc-'+uid)?.classList.toggle('used',used);
+  const cb=document.querySelector(`#pc-${uid} .pcb`);
+  const ub=document.querySelector(`#pc-${uid} .ubadge`);
+  if(used&&!ub&&cb){const sp=document.createElement('span');sp.className='ubadge';sp.textContent='✓ usado';cb.prepend(sp);}
+  else if(!used&&ub)ub.remove();
+}
+function togAdd(){const f=document.getElementById('af');f.classList.toggle('open');if(f.classList.contains('open')){document.getElementById('nfn').value='';document.getElementById('nfp').value='';}}
+function saveNew(){
+  if(!cur)return;
+  const nome=document.getElementById('nfn').value.trim();
+  const prompt=document.getElementById('nfp').value.trim();
+  if(!nome||!prompt){alert('Preencha nome e prompt!');return;}
+  const s=D[cur];if(!s.custom)s.custom=[];
+  const ei=100+s.custom.length;
+  s.custom.push([ei,nome,prompt]);
+  localStorage.setItem('cp_'+cur,JSON.stringify(s.custom));
+  togAdd();renderDash();
+}
+function execP(ei,nome){
+  if(!cur)return;
+  setMode('s');buildSeqList();
+  const idx=seqL.findIndex(x=>x.sel===cur&&x.p[0]===ei&&x.p[1]===nome);
+  if(idx>=0){seqI=idx;renderSeq();}
+}
+function buildSeqList(){seqL=[];Object.values(D).forEach(s=>aP(s).forEach(p=>seqL.push({sel:s.id,p})));return seqL;}
+function renderSeq(){
+  if(!seqL.length)buildSeqList();
+  const item=seqL[seqI];if(!item)return;
+  const s=D[item.sel];const p=item.p;
+  const tot=seqL.length;const pct=Math.round((seqI/tot)*100);
+  document.getElementById('sc').textContent=`Prompt ${seqI+1} de ${tot}`;
+  document.getElementById('sp').textContent=pct+'%';
+  document.getElementById('sf2').style.width=pct+'%';
+  document.getElementById('sfg').textContent=s.flag;
+  document.getElementById('snm').textContent=s.nome;
+  document.getElementById('sap').textContent=s.ap;
+  document.getElementById('ssb').textContent=`${p[0]}. ${p[1]}`;
+  document.getElementById('bp').textContent=p[2];
+  const uid=item.sel+'_'+p[0]+'_'+p[1].replace(/\W/g,'');
+  const used=isU(uid);
+  document.getElementById('bmu').classList.toggle('on',used);
+  document.getElementById('bmu').textContent=used?'✓ Usado':'✓ Marcar Usado';
+  document.getElementById('bpv').disabled=seqI===0;
+  document.getElementById('bnx').disabled=seqI===tot-1;
+  document.getElementById('bcb').textContent='📋 Copiar Prompt';
+  document.getElementById('bcb').classList.remove('ok');
+}
+function smv(d){seqI=Math.max(0,Math.min(seqL.length-1,seqI+d));renderSeq();}
+function cpB(){
+  const t=document.getElementById('bp').textContent;
+  navigator.clipboard.writeText(t).then(()=>{const b=document.getElementById('bcb');b.textContent='✓ Copiado!';b.classList.add('ok');setTimeout(()=>{b.textContent='📋 Copiar Prompt';b.classList.remove('ok');},2500);});
+}
+function togUsedS(){
+  const item=seqL[seqI];if(!item)return;
+  const uid=item.sel+'_'+item.p[0]+'_'+item.p[1].replace(/\W/g,'');
+  togU(uid);const used=isU(uid);
+  document.getElementById('bmu').classList.toggle('on',used);
+  document.getElementById('bmu').textContent=used?'✓ Usado':'✓ Marcar Usado';
+}
+function setMode(m){
+  mode=m;
+  document.getElementById('bd').classList.toggle('on',m==='d');
+  document.getElementById('bs').classList.toggle('on',m==='s');
+  document.getElementById('dm').classList.toggle('hid',m==='s');
+  document.getElementById('sm').classList.toggle('vis',m==='s');
+  if(m==='s'){buildSeqList();renderSeq();}
+}
+function goHome(){window.scrollTo({top:0,behavior:'smooth'});}
+function fSel(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  Object.keys(D).forEach(id=>{const el=document.getElementById('si-'+id);if(el)el.style.display=(D[id].nome.toLowerCase().includes(q)||D[id].ap.toLowerCase().includes(q))?'':'none';});
+}
+buildSB();
+</script>
+</body>
+</html>
